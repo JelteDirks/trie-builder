@@ -8,7 +8,7 @@
 
 void print_usage(void);
 
-int handle_args(int argc, char **argv) 
+int handle_args(int argc, char **argv, char* file_path)
 {
   if (argc < 2) {
     fprintf(stderr, "There is no file provided as input. Please refer to the usage.\n");
@@ -28,12 +28,11 @@ int handle_args(int argc, char **argv)
     return 1;
   }
 
-  char file[MAX_ARG_LEN];
-  strncpy(file, argv[1], MAX_ARG_LEN);
+  strncpy(file_path, argv[1], MAX_ARG_LEN);
 
   struct stat filestats;
-  if (stat(file, &filestats) == -1) {
-    fprintf(stderr, "Problem reading file %s, check if it exists\n", file);
+  if (stat(file_path, &filestats) == -1) {
+    fprintf(stderr, "Problem reading file %s, check if it exists\n", file_path);
     return 1;
   }
 
