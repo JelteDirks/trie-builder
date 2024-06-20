@@ -1,0 +1,7 @@
+*.o
+*.a
+*.s
+private/
+src/**/*.o
+src/**/*.a
+src/**/*.s
