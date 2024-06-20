@@ -1,3 +1,5 @@
+/* Copyright (C) Jelte Dirks - All Rights Reserved */
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/_types/_s_ifmt.h>

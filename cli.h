@@ -1,3 +1,5 @@
+/* Copyright (C) Jelte Dirks - All Rights Reserved */
+
 #ifndef MAX_ARG_LEN
 #define MAX_ARG_LEN 200
 #endif
