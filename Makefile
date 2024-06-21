@@ -1,5 +1,5 @@
 # Compile main, plain and simple
-OBJS=src/main.o src/cli.o
+OBJS=src/main.o src/cli.o src/trie.o
 OUT=buildtrie
 CC=clang
 CFLAGS=-g -Wall
