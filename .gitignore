@@ -5,3 +5,4 @@ private/
 src/**/*.o
 src/**/*.a
 src/**/*.s
+buildtrie
