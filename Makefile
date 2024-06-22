@@ -1,12 +1,23 @@
-# Compile main, plain and simple
 OBJS=src/main.o src/cli.o src/trie.o
 OUT=buildtrie
 CC=clang
-CFLAGS=-g -Wall
-DEPS=src/cli.h
+CFLAGS=-Wall
+OPTFLAGS=-g -O0
+DEPS=src/cli.h src/trie.h
 
-build: $(OBJS) $(DEPS)
-	$(CC) -o $(OUT) $(OBJS) 
 
-clean: $(OBJS) $(OUT)
-	rm $(OBJS) $(OUT)
+all: clean debug
+
+%.o: %.c $(DEPS)
+	$(CC) $(OPTFLAGS) $(CFLAGS) -c -o $@ $<
+
+debug: OPTFLAGS=-g -O0
+debug: $(OBJS) $(DEPS)
+	$(CC) $(OPTFLAGS) -o $(OUT) $(OBJS) 
+
+release: OPTFLAGS=-O3
+release: $(OBJS) $(DEPS)
+	$(CC) $(OPTFLAGS) -o $(OUT) $(OBJS) 
+
+clean:
+	rm -f $(OBJS) $(OUT)
