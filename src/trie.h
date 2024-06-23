@@ -1,6 +1,8 @@
 #ifndef _TRIE_H_
 
 #define _TRIE_H_
+#define READ_BUFFER_SIZE 1024
+#define MAX_LENGTH 200
 
 typedef struct TrieEntry {
   struct TrieEntry* next;
@@ -21,8 +23,8 @@ typedef struct Trie {
 } trie_t;
 
 int build_trie(trie_t *const trie);
-void destroy_trie(trie_t *const trie);
-void destroy_trie_node(trie_node_t *const trie);
-void destroy_trie_entries(trie_entry_t *const trie_entry);
+void trie_destroy(trie_t *const trie);
+int trie_add_value(trie_t *const t, char *const v, unsigned int v_len);
+void trie_print(trie_t *const trie);
 
 #endif

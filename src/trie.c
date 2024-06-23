@@ -2,11 +2,15 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+int trie_node_append_entry(trie_entry_t ** base, trie_entry_t* v);
+void trie_node_destroy(trie_node_t *const trie);
+void trie_entry_destroy(trie_entry_t *const trie_entry);
+void trie_print_node(trie_node_t *const n, char* prefix, int cur_len);
 
-int build_trie(trie_t *const trie)
-{
-  trie_node_t* root = (trie_node_t *) malloc(sizeof(trie_node_t));
+int build_trie(trie_t *const trie) {
+  trie_node_t *root = (trie_node_t *)malloc(sizeof(trie_node_t));
 
   if (root == NULL) {
     fprintf(stderr, "could not allocate memory for root node, aborting...\n");
@@ -24,16 +28,34 @@ int build_trie(trie_t *const trie)
   return 0;
 }
 
-void destroy_trie(trie_t *const trie)
+int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
 {
-  destroy_trie_node(trie->root);
+  return 0;
+}
+
+int trie_node_append_entry(trie_entry_t ** base, trie_entry_t* v)
+{
+  return 0;
+}
+
+void trie_print(trie_t *const trie)
+{
+}
+
+void trie_print_node(trie_node_t *const n, char* prefix, int cur_len)
+{
+}
+
+void trie_destroy(trie_t *const trie)
+{
+  trie_node_destroy(trie->root);
   free(trie);
 }
 
-void destroy_trie_node(trie_node_t *const trie_node)
+void trie_node_destroy(trie_node_t *const trie_node)
 {
   if (trie_node->entries != NULL) {
-    destroy_trie_entries(trie_node->entries);
+    trie_entry_destroy(trie_node->entries);
   }
 
   if (trie_node->children != NULL) {
@@ -43,11 +65,11 @@ void destroy_trie_node(trie_node_t *const trie_node)
   free(trie_node);
 }
 
-void destroy_trie_entries(trie_entry_t *const trie_entry)
+void trie_entry_destroy(trie_entry_t *const trie_entry)
 {
-  trie_entry_t* cur = trie_entry;
+  trie_entry_t *cur = trie_entry;
   while (cur != NULL) {
-    trie_entry_t* last = cur;
+    trie_entry_t *last = cur;
     cur = cur->next;
     free(last);
   }
