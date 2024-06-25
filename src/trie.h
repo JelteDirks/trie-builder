@@ -13,7 +13,8 @@ typedef struct TrieNode {
   char key;
   trie_entry_t* entries;
   struct TrieNode* children;
-  unsigned long nvalues;
+  unsigned long n_children;
+  unsigned long n_entries;
 } trie_node_t;
 
 typedef struct Trie {
