@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   ssize_t bytes_read;
   trie_t *triep = malloc(sizeof(trie_t));
 
-  if (build_trie(triep)) {
+  if (init_trie(triep)) {
     fprintf(stderr, "could not build tree, check stderr for the reason\n");
   }
 
