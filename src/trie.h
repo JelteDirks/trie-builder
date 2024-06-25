@@ -15,6 +15,7 @@ typedef struct TrieNode {
   struct TrieNode* children;
   unsigned long n_children;
   unsigned long n_entries;
+  unsigned long entries_on_path;
 } trie_node_t;
 
 typedef struct Trie {

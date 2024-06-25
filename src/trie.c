@@ -66,16 +66,24 @@ int trie_print_node(trie_node_t *const n, char* prefix, int* cur_len)
     fprintf(stderr, "cur_len > MAX_LENGTH in trie_print_node, abort\n");
     return 1;
   }
+
   prefix[(*cur_len)++] = n->key;
   prefix[(*cur_len)++] = '-';
+
+  if (n->n_entries > 0) {
+    prefix[(*cur_len)++] = '\0';
+    trie_entry_t * entry = n->entries;
+    while (entry != NULL) {
+      fprintf(stderr, "%s: %s\n", prefix, entry->value);
+      entry = entry->next;
+    }
+    (*cur_len)--;
+  }
 
   if (n->n_children > 0) {
     for (int i = 0 ; i < n->n_children; ++i) {
       trie_print_node(&n->children[i], prefix, cur_len);
     }
-  } else {
-    prefix[*cur_len] = '\0';
-    fprintf(stderr, "%s\n", prefix);
   }
 
   prefix[--(*cur_len)] = '\0';
