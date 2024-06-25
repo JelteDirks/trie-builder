@@ -56,10 +56,7 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
     }
 
     if (last == cur) {
-      char * intermediate = alloca(sizeof(char) * (v_len - idx + 1));
-      memset(intermediate, '\0', v_len - idx + 1);
-      memcpy(intermediate, v + idx, v_len - idx);
-      break;
+      break; /* no new node was found */
     }
 
     idx++;
