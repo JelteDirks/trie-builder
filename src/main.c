@@ -40,10 +40,10 @@ int main(int argc, char **argv)
     fprintf(stderr, "could not build tree, check stderr for the reason\n");
   }
 
-  unsigned int word_offset;
   int line_start_offset;
   size_t length;
   unsigned int i;
+  unsigned int word_offset = 0;
 
   while ((bytes_read = read(fd, read_buf, READ_BUFFER_SIZE)) > 0) {
     line_start_offset = -1;
