@@ -6,7 +6,7 @@ OPTFLAGS=-g -O0
 DEPS=src/cli.h src/trie.h
 
 
-all: clean debug
+all: debug
 
 %.o: %.c $(DEPS)
 	$(CC) $(OPTFLAGS) $(CFLAGS) -c -o $@ $<
@@ -16,7 +16,7 @@ debug: $(OBJS) $(DEPS)
 	$(CC) $(OPTFLAGS) -o $(OUT) $(OBJS) 
 
 release: OPTFLAGS=-O3
-release: $(OBJS) $(DEPS)
+release: clean $(OBJS) $(DEPS)
 	$(CC) $(OPTFLAGS) -o $(OUT) $(OBJS) 
 
 clean:
