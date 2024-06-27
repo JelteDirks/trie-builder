@@ -135,7 +135,7 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
       trie_node_t *found = NULL;
       for (int i = 0; i < cur->n_children; i++) {
         trie_node_t *child = &cur->children[i];
-        if (child->key == v[pos]) {
+        if (child->key == v[pos]) { // FIX: errors here: BAD ACC address: 0x21
           found = child;
         }
       }
