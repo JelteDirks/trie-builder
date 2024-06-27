@@ -88,5 +88,6 @@ int main(int argc, char **argv)
     memcpy(word_buf, read_buf + line_start_offset + 1, word_offset * sizeof(char));
   };
 
+  trie_print_unique_path(triep);
   trie_destroy(triep);
 }

@@ -11,6 +11,7 @@ int trie_add_node_rec(trie_node_t *const n,
                        char *const v,
                        int start,
                        int len);
+int trie_print_unique_node(trie_node_t *const n, char* prefix, int* cur_len);
 
 int init_trie(trie_t *const trie)
 {
@@ -50,6 +51,7 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
       trie_node_t *const child = &cur->children[i];
 
       if (child->key == v[idx]) {
+        child->entries_on_path += 1;
         cur = child; /* advance to next in path */
         break;
       }
@@ -118,6 +120,59 @@ void trie_print(trie_t *const trie)
   free(prefix);
 
   fprintf(stderr, "==end==\n");
+}
+
+int trie_print_unique_path(trie_t *trie)
+{
+
+  char *const prefix = malloc(sizeof(char) * MAX_LENGTH);
+  int length = 0;
+
+  if (trie->root != NULL) {
+    if (trie->root->children != NULL) {
+      for (int i = 0 ; i < trie->root->n_children; ++i) {
+        trie_print_unique_node(&trie->root->children[i], prefix, &length);
+      }
+    }
+  }
+
+  free(prefix);
+
+  return 0;
+}
+
+int trie_print_unique_node(trie_node_t *const n,
+                           char* prefix,
+                           int* cur_len)
+{
+  if (*cur_len > MAX_LENGTH) {
+    fprintf(stderr, "cur_len > MAX_LENGTH in trie_print_node, abort\n");
+    return 1;
+  }
+
+  prefix[(*cur_len)++] = n->key;
+  prefix[(*cur_len)++] = '-';
+
+  if (n->entries_on_path == 1) {
+    trie_node_t *curn = n;
+    while (curn->children != NULL) {
+      curn = &curn->children[0];
+    }
+
+    prefix[(*cur_len)++] = '\0';
+    trie_entry_t * entry = curn->entries;
+    fprintf(stderr, "%s [unique]-> %s\n", prefix, entry->value);
+    (*cur_len)--;
+  } else if (n->n_children > 0) {
+    for (int i = 0 ; i < n->n_children; ++i) {
+      trie_print_unique_node(&n->children[i], prefix, cur_len);
+    }
+  }
+
+  prefix[--(*cur_len)] = '\0';
+  prefix[--(*cur_len)] = '\0';
+
+  return 0;
 }
 
 int trie_print_node(trie_node_t *const n, char* prefix, int* cur_len)

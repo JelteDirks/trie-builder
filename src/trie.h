@@ -60,4 +60,6 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len);
  */
 void trie_print(trie_t *const trie);
 
+int trie_print_unique_path(trie_t *trie);
+
 #endif
