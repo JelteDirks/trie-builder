@@ -4,18 +4,12 @@
 #define READ_BUFFER_SIZE 1024
 #define MAX_LENGTH 200 /* max length is including \0 character */
 
-typedef struct TrieEntry {
-  struct TrieEntry* next;
-  char* value;
-} trie_entry_t;
-
 typedef struct TrieNode {
-  char key;
-  trie_entry_t* entries;
   struct TrieNode* children;
   unsigned long n_children;
-  unsigned long n_entries;
-  unsigned long entries_on_path;
+  unsigned long values_on_path;
+  char * value;
+  char key;
 } trie_node_t;
 
 typedef struct Trie {
@@ -59,7 +53,5 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len);
  * with the entry that belongs to that path.
  */
 void trie_print(trie_t *const trie);
-
-int trie_print_unique_path(trie_t *trie);
 
 #endif
