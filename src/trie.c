@@ -150,7 +150,16 @@ int trie_print_unique_node(trie_node_t *const n,
     return 1;
   }
 
-  prefix[(*cur_len)++] = n->key;
+  // FIX: amount of children does not always guarantee uniqueness. Also the
+  // node after the multi parent should be printed, not the multi parent
+  // itself.
+
+  if (n->n_children > 1) {
+    prefix[(*cur_len)++] = n->key;
+  } else {
+    prefix[(*cur_len)++] = '_';
+  }
+
   prefix[(*cur_len)++] = '-';
 
   if (n->entries_on_path == 1) {
