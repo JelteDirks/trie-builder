@@ -90,6 +90,20 @@ trie_node_t* append_child_with_key(trie_node_t *const node, char key)
   return lastchild;
 }
 
+int copy_value(trie_node_t *const node, char *value)
+{
+  size_t len = strnlen(value, MAX_LENGTH);
+  if (len > MAX_LENGTH) {
+    fprintf(stderr, "length exceeds max length: %s\n", value);
+    return 1;
+  }
+  node->value = (char *) malloc(sizeof(char) * (len + 1));
+  strncpy(node->value, value, len);
+  node->value[len] = '\0';
+
+  return 0;
+}
+
 int append_new_chain(trie_node_t *const base, char *const value, unsigned int start, unsigned int length)
 {
   unsigned int pos = start;
@@ -104,16 +118,7 @@ int append_new_chain(trie_node_t *const base, char *const value, unsigned int st
     pos++;
   }
 
-  size_t len = strnlen(value, MAX_LENGTH);
-  if (len > MAX_LENGTH) {
-    fprintf(stderr, "length exceeds max length: %s\n", value);
-    return 1;
-  }
-  cur->value = (char *) malloc(sizeof(char) * (len + 1));
-  strncpy(cur->value, value, len);
-  cur->value[len] = '\0';
-
-  return 0;
+  return copy_value(cur, value);
 }
 
 int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
@@ -143,7 +148,7 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
     }
   }
 
-  return 0;
+  return copy_value(cur, v);
 }
 
 void trie_destroy(trie_t *const trie)
