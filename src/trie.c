@@ -70,6 +70,7 @@ int increase_children_arr(trie_node_t *const node)
   node->n_children += 1;
   trie_node_t *newarr = realloc(node->children, sizeof(trie_node_t) * node->n_children);
   if (newarr == NULL) return 1;
+  node->children = newarr;
   if (init_trie_node(get_last_child(node))) {
     fprintf(stderr, "failed to increase children of node: key=%c value=%s nc=%lu\n",
             node->key,
@@ -77,7 +78,6 @@ int increase_children_arr(trie_node_t *const node)
             node->n_children);
     return 1;
   }
-  node->children = newarr;
   return 0;
 }
 
@@ -142,8 +142,6 @@ int append_new_chain(trie_node_t *const base, char *const value, unsigned int st
 
 int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
 {
-  printf("adding value to trie: %s\n", v);
-
   trie_node_t * cur = t->root;
   unsigned int pos = 0;
 
@@ -154,7 +152,7 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
       trie_node_t *found = NULL;
       for (int i = 0; i < cur->n_children; i++) {
         trie_node_t *child = &cur->children[i];
-        if (child->key == v[pos]) { // FIX: errors here: BAD ACC address: 0x21
+        if (child->key == v[pos]) {
           found = child;
         }
       }
