@@ -11,6 +11,9 @@
  */
 int init_trie_node(trie_node_t * node)
 {
+
+  if (node == NULL) return 1;
+
   node->children = NULL;
   node->n_children = 0;
   node->value = NULL;
@@ -49,25 +52,41 @@ int init_trie(trie_t *const trie)
   return 0;
 }
 
-int increase_children_arr(trie_node_t *const node)
-{
-  trie_node_t *newarr = realloc(node->children, sizeof(trie_node_t) * node->n_children + 1);
-  if (newarr == NULL) return 1;
-  init_trie_node(&newarr->children[node->n_children++]);
-  node->children = newarr;
-  return 0;
-}
-
 trie_node_t* get_last_child(trie_node_t *const node)
 {
   if (node->n_children == 0 || node->children == NULL) {
+    fprintf(stderr, "node has 0 children or NULL pointer in get_last_child\n");
     return NULL;
   }
   return &node->children[node->n_children - 1];
 }
 
+int increase_children_arr(trie_node_t *const node)
+{
+  if (node == NULL) {
+    fprintf(stderr, "node=NULL in increase_children_arr\n");
+    return 1;
+  }
+  node->n_children += 1;
+  trie_node_t *newarr = realloc(node->children, sizeof(trie_node_t) * node->n_children);
+  if (newarr == NULL) return 1;
+  if (init_trie_node(get_last_child(node))) {
+    fprintf(stderr, "failed to increase children of node: key=%c value=%s nc=%lu\n",
+            node->key,
+            node->value,
+            node->n_children);
+    return 1;
+  }
+  node->children = newarr;
+  return 0;
+}
+
 int append_empty_child(trie_node_t *const node)
 {
+  if (node == NULL) {
+    fprintf(stderr, "node=NULL in append_empty_child\n");
+    return 1;
+  }
   if (node->children == NULL || node->n_children == 0) {
     trie_node_t *newnode = create_empty_node();
     if (newnode == NULL) return 1;
