@@ -133,8 +133,10 @@ int append_new_chain(trie_node_t *const base,
   trie_node_t *cur = base;
 
   while (pos < length) {
+    cur->values_on_path += 1;
     trie_node_t* newchild = append_child_with_key(cur, value[pos]);
     if (newchild == NULL) {
+      fprintf(stderr, "failed to append new child in chain\n");
       return 1;
     }
     newchild->depth = depth;
@@ -142,6 +144,8 @@ int append_new_chain(trie_node_t *const base,
     depth += 1;
     pos++;
   }
+
+  cur->values_on_path = 1;
 
   return copy_value(cur, value);
 }
@@ -164,7 +168,6 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
         }
       }
       if (found == NULL) {
-        cur->values_on_path += 1;
         return append_new_chain(cur, v, pos, v_len, depth + 1);
       } else {
         cur->values_on_path += 1;
@@ -174,6 +177,8 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
       }
     }
   }
+
+  cur->values_on_path += 1;
 
   return copy_value(cur, v);
 }
