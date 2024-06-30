@@ -1,10 +1,20 @@
 #include "trie.h"
+#include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
+void print_node(trie_node_t *node)
+{
+  fprintf(stderr, "n_children:%u value:%s values_on_path:%u key:%c depth:%u\n",
+          node->n_children,
+          node->value,
+          node->values_on_path,
+          node->key,
+          node->depth);
+}
 /*
  * Sets initialization values on a trie node. The initial values never acquire
  * any memory, so if it errors the node can be freed if required.
@@ -19,6 +29,7 @@ int init_trie_node(trie_node_t * node)
   node->value = NULL;
   node->values_on_path = 0;
   node->key = '\0';
+  node->depth = 0;
 
   return 0;
 }
@@ -183,12 +194,53 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
   return copy_value(cur, v);
 }
 
-void print_node(trie_node_t *const node)
+void verify_values_on_path(trie_node_t *const node)
 {
+  unsigned int values = 0;
+  const unsigned int vop = node->values_on_path;
+
+  if (node->value != NULL) {
+    values += 1;
+  }
+
+  for (int i = 0; i < node->n_children; i++) {
+    verify_values_on_path(&node->children[i]);
+    values += node->children[i].values_on_path;
+  }
+
+  if (values != vop) {
+    fprintf(stderr, "issue with node: ");
+    print_node(node);
+    fprintf(stderr, "values != vop - %u != %u\n", values, vop);
+  }
+
+  assert(values == vop);
 }
+
+void verify_depth(trie_node_t *const node, unsigned int depth)
+{
+  if (node == NULL) {
+    return;
+  }
+
+  if (node->depth != depth) {
+    fprintf(stderr, "issue with node: ");
+    print_node(node);
+    fprintf(stderr, "depth != expected depth - %u != %u", node->depth, depth);
+  }
+
+  assert(node->depth == depth);
+
+  for (int i = 0; i < node->n_children; i++) {
+    verify_depth(&node->children[i], depth + 1);
+  }
+}
+
 
 void trie_print(trie_t *const trie)
 {
+  verify_depth(trie->root, 0);
+  verify_values_on_path(trie->root);
 }
 
 void trie_destroy(trie_t *const trie)
