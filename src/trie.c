@@ -243,7 +243,17 @@ void trie_print(trie_t *const trie)
   verify_values_on_path(trie->root);
 }
 
+void destroy_node(trie_node_t *const node)
+{
+  for (int i = 0; i < node->n_children; i++) {
+    destroy_node(&node->children[i]);
+  }
+
+  free(node->value);
+  free(node->children);
+}
+
 void trie_destroy(trie_t *const trie)
 {
-  // TODO: clean up all memory from this trie.
+  destroy_node(trie->root);
 }

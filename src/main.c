@@ -113,6 +113,5 @@ int main(int argc, char **argv)
 
   trie_print(triep);
   trie_destroy(triep);
-
-
+  free(triep);
 }

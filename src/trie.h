@@ -7,10 +7,10 @@
 typedef struct TrieNode {
   struct TrieNode* children;
   unsigned int n_children;
-  unsigned int values_on_path; // TODO: update these when adding
+  unsigned int values_on_path;
   char * value;
   char key;
-  unsigned int depth; // TODO: update these when adding
+  unsigned int depth;
 } trie_node_t;
 
 typedef struct Trie {
