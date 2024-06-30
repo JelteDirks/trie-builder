@@ -40,6 +40,23 @@ int main(int argc, char **argv)
     fprintf(stderr, "could not build tree, check stderr for the reason\n");
   }
 
+  char c = '\0';
+  while ((bytes_read = read(fd, &c, 1)) == 1) {
+    if (c == '\r') {
+      fprintf(stderr, "dos line endings detected, this is not supported yet, aborting...\n");
+      return 1;
+    }
+    if (c == '\n') {
+      break; /* no need to scan the entire file, \r preceeds \n */
+    }
+  }
+
+  off_t new_offset = lseek(fd, 0, SEEK_SET);
+  if (new_offset != 0) {
+    fprintf(stderr, "error setting file offset to start of file\n");
+    return 1;
+  }
+
   int line_start_offset;
   size_t length;
   unsigned int i;
@@ -88,6 +105,14 @@ int main(int argc, char **argv)
     memcpy(word_buf, read_buf + line_start_offset + 1, word_offset * sizeof(char));
   };
 
+  int status = close(fd);
+  if (status == -1) {
+    fprintf(stderr, "error closing the file\n");
+    return 1;
+  }
+
   trie_print(triep);
   trie_destroy(triep);
+
+
 }
