@@ -241,6 +241,33 @@ void verify_depth(trie_node_t *const node, unsigned int depth)
   }
 }
 
+void trie_print_prefix(trie_node_t *const node, char * prefix)
+{
+  if (node->key == '\0') {
+    prefix[node->depth * 2] = ' ';
+  } else if (node->parent == NULL) {
+    prefix[node->depth * 2] = node->key;
+  } else if (node->parent->values_on_path > node->values_on_path) {
+    prefix[node->depth * 2] = node->key;
+  } else {
+    prefix[node->depth * 2] = '_';
+  }
+  prefix[node->depth * 2 + 1] = '-';
+  prefix[node->depth * 2 + 2] = '\0';
+
+
+  if (node->value != NULL) {
+    fprintf(stdout, "%s: %s [depth=%u]\n" , prefix, node->value, node->depth);
+  }
+
+  for (int i = 0; i < node->n_children; i++) {
+    trie_print_prefix(&node->children[i], prefix);
+  }
+
+  prefix[node->depth * 2] = '\0';
+  prefix[node->depth * 2 + 1] = '\0';
+}
+
 void print_node_tree(trie_node_t *const node, char * prefix)
 {
   if (node->key == '\0') {
@@ -268,6 +295,7 @@ void trie_print(trie_t *const trie)
 {
   verify_depth(trie->root, 0);
   verify_values_on_path(trie->root);
+  verify_parent_node(trie->root);
 
   char buffer[1000];
   memset(buffer, 0, 1000);

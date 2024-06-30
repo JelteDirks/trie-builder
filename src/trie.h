@@ -1,7 +1,7 @@
 #ifndef _TRIE_H_
 
 #define _TRIE_H_
-#define READ_BUFFER_SIZE 1024
+#define READ_BUFFER_SIZE 1024 /* max buffer size when reading file */
 #define MAX_LENGTH 200 /* max length is including \0 character */
 
 typedef struct TrieNode {
@@ -19,6 +19,8 @@ typedef struct Trie {
   unsigned long nodes;
   unsigned long values;
 } trie_t;
+
+void trie_print_prefix(trie_node_t *const node, char * prefix);
 
 /*
  * Initializes a region that is allocated for a trie. The user can decide
