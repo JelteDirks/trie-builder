@@ -72,7 +72,7 @@ int increase_children_arr(trie_node_t *const node)
   if (newarr == NULL) return 1;
   node->children = newarr;
   if (init_trie_node(get_last_child(node))) {
-    fprintf(stderr, "failed to increase children of node: key=%c value=%s nc=%lu\n",
+    fprintf(stderr, "failed to increase children of node: key=%c value=%s nc=%u\n",
             node->key,
             node->value,
             node->n_children);
@@ -123,7 +123,11 @@ int copy_value(trie_node_t *const node, char *value)
   return 0;
 }
 
-int append_new_chain(trie_node_t *const base, char *const value, unsigned int start, unsigned int length)
+int append_new_chain(trie_node_t *const base,
+                     char *const value,
+                     unsigned int start,
+                     unsigned int length,
+                     unsigned int depth)
 {
   unsigned int pos = start;
   trie_node_t *cur = base;
@@ -133,7 +137,9 @@ int append_new_chain(trie_node_t *const base, char *const value, unsigned int st
     if (newchild == NULL) {
       return 1;
     }
+    newchild->depth = depth;
     cur = newchild;
+    depth += 1;
     pos++;
   }
 
@@ -144,10 +150,11 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
 {
   trie_node_t * cur = t->root;
   unsigned int pos = 0;
+  unsigned int depth = 0;
 
   while (pos < v_len) {
     if (cur->children == NULL || cur->n_children == 0) {
-      return append_new_chain(cur, v, pos, v_len);
+      return append_new_chain(cur, v, pos, v_len, depth + 1);
     } else {
       trie_node_t *found = NULL;
       for (int i = 0; i < cur->n_children; i++) {
@@ -157,8 +164,11 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
         }
       }
       if (found == NULL) {
-        return append_new_chain(cur, v, pos, v_len);
+        cur->values_on_path += 1;
+        return append_new_chain(cur, v, pos, v_len, depth + 1);
       } else {
+        cur->values_on_path += 1;
+        depth += 1;
         cur = found;
         pos++;
       }
@@ -166,6 +176,14 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
   }
 
   return copy_value(cur, v);
+}
+
+void print_node(trie_node_t *const node)
+{
+}
+
+void trie_print(trie_t *const trie)
+{
 }
 
 void trie_destroy(trie_t *const trie)
