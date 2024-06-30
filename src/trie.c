@@ -72,6 +72,17 @@ trie_node_t* get_last_child(trie_node_t *const node)
   return &node->children[node->n_children - 1];
 }
 
+void update_parent(trie_node_t *const node) {
+  for (int i = 0; i < node->n_children; i++) {
+    trie_node_t *const child = &node->children[i];
+    child->parent = node;
+    for (int j = 0; j < child->n_children; j++) {
+      trie_node_t *const childchild = &child->children[j];
+      childchild->parent = child;
+    }
+  }
+}
+
 int increase_children_arr(trie_node_t *const node)
 {
   if (node == NULL) {
@@ -102,10 +113,13 @@ int append_empty_child(trie_node_t *const node)
     trie_node_t *newnode = create_empty_node();
     if (newnode == NULL) return 1;
     node->children = newnode;
+    node->children->parent = node;
     node->n_children = 1;
     return 0;
   }
-  return increase_children_arr(node);
+
+  increase_children_arr(node);
+  return 0;
 }
 
 trie_node_t* append_child_with_key(trie_node_t *const node, char key)
@@ -194,6 +208,14 @@ int trie_add_value(trie_t *const t, char *const v, unsigned int v_len)
   return copy_value(cur, v);
 }
 
+void verify_parent_node(trie_node_t *const node)
+{
+  for (int i = 0; i < node->n_children; i++) {
+    verify_parent_node(&node->children[i]);
+    assert(node->children[i].parent == node);
+  }
+}
+
 void verify_values_on_path(trie_node_t *const node)
 {
   unsigned int values = 0;
@@ -208,29 +230,12 @@ void verify_values_on_path(trie_node_t *const node)
     values += node->children[i].values_on_path;
   }
 
-  if (values != vop) {
-    fprintf(stderr, "issue with node: ");
-    print_node(node);
-    fprintf(stderr, "values != vop - %u != %u\n", values, vop);
-  }
-
   assert(values == vop);
 }
 
 void verify_depth(trie_node_t *const node, unsigned int depth)
 {
-  if (node == NULL) {
-    return;
-  }
-
-  if (node->depth != depth) {
-    fprintf(stderr, "issue with node: ");
-    print_node(node);
-    fprintf(stderr, "depth != expected depth - %u != %u", node->depth, depth);
-  }
-
   assert(node->depth == depth);
-
   for (int i = 0; i < node->n_children; i++) {
     verify_depth(&node->children[i], depth + 1);
   }

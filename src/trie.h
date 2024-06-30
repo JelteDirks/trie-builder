@@ -6,6 +6,7 @@
 
 typedef struct TrieNode {
   struct TrieNode* children;
+  struct TrieNode* parent;
   unsigned int n_children;
   unsigned int values_on_path;
   char * value;
