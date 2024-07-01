@@ -119,6 +119,7 @@ int append_empty_child(trie_node_t *const node)
   }
 
   increase_children_arr(node);
+  update_parent(node);
   return 0;
 }
 
@@ -293,12 +294,12 @@ void print_node_tree(trie_node_t *const node, char * prefix)
 
 void trie_print_prefix(trie_t *const trie)
 {
+  char x[MAX_LENGTH * 3 + 10]; /* needs at least 3x length of line */
+  trie_print_prefix_node(trie->root,x);
+
   verify_depth(trie->root, 0);
   verify_values_on_path(trie->root);
   verify_parent_node(trie->root); // TODO: fix parents, somehow doesn't work on macos
-
-  char x[MAX_LENGTH * 3 + 10]; /* needs at least 3x length of line */
-  trie_print_prefix_node(trie->root,x);
 }
 
 void trie_print(trie_t *const trie)
