@@ -38,17 +38,18 @@ With this file in the repo, you can call the program like this:
 
 You will find the following example output:
 ```text
- -A-c-_-_-p-t-_-P-_-_-_-_-: Accept-Patch [depth=12]
- -A-c-_-_-p-t-_-R-_-_-_-_-_-: Accept-Ranges [depth=13]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-O-_-_-_-_-_-: Access-Control-Allow-Origin [depth=27]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-C-_-_-_-_-_-_-_-_-_-_-: Access-Control-Allow-Credentials [depth=32]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-M-_-_-_-_-_-_-: Access-Control-Allow-Methods [depth=28]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-H-_-_-_-_-_-_-: Access-Control-Allow-Headers [depth=28]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-E-_-_-_-_-_-_-_-_-_-_-_-_-_-: Access-Control-Expose-Headers [depth=29]
- -A-c-_-_-s-_-_-_-_-_-_-_-_-_-_-M-_-_-_-_-_-_-: Access-Control-Max-Age [depth=22]
- -A-g-_-: Age [depth=3]
- -A-l-l-_-_-: Allow [depth=5]
- -A-l-t-_-_-_-_-: Alt-Svc [depth=7]
+Analyzing file: testfile.txt
+ -_-c-_-_-p-t-_-P-_-_-_-_-: Accept-Patch [depth=12]
+ -_-c-_-_-p-t-_-R-_-_-_-_-_-: Accept-Ranges [depth=13]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-O-_-_-_-_-_-: Access-Control-Allow-Origin [depth=27]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-C-_-_-_-_-_-_-_-_-_-_-: Access-Control-Allow-Credentials [depth=32]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-M-_-_-_-_-_-_-: Access-Control-Allow-Methods [depth=28]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-A-_-_-_-_-_-H-_-_-_-_-_-_-: Access-Control-Allow-Headers [depth=28]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-E-_-_-_-_-_-_-_-_-_-_-_-_-_-: Access-Control-Expose-Headers [depth=29]
+ -_-c-_-_-s-_-_-_-_-_-_-_-_-_-_-M-_-_-_-_-_-_-: Access-Control-Max-Age [depth=22]
+ -_-g-_-: Age [depth=3]
+ -_-l-l-_-_-: Allow [depth=5]
+ -_-l-t-_-_-_-_-: Alt-Svc [depth=7]
 ```
 The output shows the characters from the lines in between '-' characters. If
 the original lines include '-' characters, they will also appear between '-'
@@ -57,7 +58,7 @@ necessary for uniquely distinguish it from another string of course.
 
 In this output, you can see that some characters are skipped, and some
 characters are printed. For instance, in the first line the characters
-'AcptP' are printed, because at those positions in the string the characters
+'cptP' are printed, because at those positions in the string the characters
 deviate from another string that had exactly the same prefix. 
 
 In theory terms, a trie is built of all the lines in the file. All trie nodes
