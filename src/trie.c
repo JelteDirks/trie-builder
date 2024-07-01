@@ -241,7 +241,7 @@ void verify_depth(trie_node_t *const node, unsigned int depth)
   }
 }
 
-void trie_print_prefix(trie_node_t *const node, char * prefix)
+void trie_print_prefix_node(trie_node_t *const node, char * prefix)
 {
   if (node->key == '\0') {
     prefix[node->depth * 2] = ' ';
@@ -261,7 +261,7 @@ void trie_print_prefix(trie_node_t *const node, char * prefix)
   }
 
   for (int i = 0; i < node->n_children; i++) {
-    trie_print_prefix(&node->children[i], prefix);
+    trie_print_prefix_node(&node->children[i], prefix);
   }
 
   prefix[node->depth * 2] = '\0';
@@ -289,6 +289,16 @@ void print_node_tree(trie_node_t *const node, char * prefix)
 
   prefix[node->depth * 2] = '\0';
   prefix[node->depth * 2 + 1] = '\0';
+}
+
+void trie_print_prefix(trie_t *const trie)
+{
+  verify_depth(trie->root, 0);
+  verify_values_on_path(trie->root);
+  verify_parent_node(trie->root); // TODO: fix parents, somehow doesn't work on macos
+
+  char x[MAX_LENGTH * 3 + 10]; /* needs at least 3x length of line */
+  trie_print_prefix_node(trie->root,x);
 }
 
 void trie_print(trie_t *const trie)

@@ -20,7 +20,7 @@ typedef struct Trie {
   unsigned long values;
 } trie_t;
 
-void trie_print_prefix(trie_node_t *const node, char * prefix);
+void trie_print_prefix(trie_t *const trie);
 
 /*
  * Initializes a region that is allocated for a trie. The user can decide

@@ -111,8 +111,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  char x[MAX_LENGTH * 3 + 10]; /* needs at least 3x length of line */
-  trie_print_prefix(triep->root,x);
+  trie_print_prefix(triep);
   trie_destroy(triep);
   free(triep);
 }
