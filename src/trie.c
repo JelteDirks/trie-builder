@@ -242,31 +242,41 @@ void verify_depth(trie_node_t *const node, unsigned int depth)
   }
 }
 
+#define SCALAR 3
+
 void trie_print_prefix_node(trie_node_t *const node, char * prefix)
 {
+  prefix[node->depth * SCALAR] = '|';
   if (node->key == '\0') {
-    prefix[node->depth * 2] = ' ';
+    prefix[node->depth * SCALAR + 1] = '*';
   } else if (node->parent == NULL) {
-    prefix[node->depth * 2] = node->key;
+    prefix[node->depth * SCALAR + 1] = node->key;
   } else if (node->parent->values_on_path > node->values_on_path) {
-    prefix[node->depth * 2] = node->key;
+    prefix[node->depth * SCALAR + 1] = node->key;
   } else {
-    prefix[node->depth * 2] = '_';
+    prefix[node->depth * SCALAR + 1] = '_';
   }
-  prefix[node->depth * 2 + 1] = '-';
-  prefix[node->depth * 2 + 2] = '\0';
+  prefix[node->depth * SCALAR + 2] = ' ';
+  prefix[node->depth * SCALAR + SCALAR] = '\0';
 
 
   if (node->value != NULL) {
-    fprintf(stdout, "%s: %s [depth=%u]\n" , prefix, node->value, node->depth);
+    for (unsigned int i = 0; i <= node->depth; i++) {
+      if (i>9) {
+        fprintf(stdout, "|%u", i);
+      } else {
+        fprintf(stdout, "|%u ", i);
+      }
+    }
+    fprintf(stdout, "\n%s: %s [depth=%u]\n" , prefix, node->value, node->depth);
   }
 
   for (int i = 0; i < node->n_children; i++) {
     trie_print_prefix_node(&node->children[i], prefix);
   }
 
-  prefix[node->depth * 2] = '\0';
-  prefix[node->depth * 2 + 1] = '\0';
+  prefix[node->depth * SCALAR] = '\0';
+  prefix[node->depth * SCALAR + 1] = '\0';
 }
 
 void print_node_tree(trie_node_t *const node, char * prefix)
@@ -294,7 +304,7 @@ void print_node_tree(trie_node_t *const node, char * prefix)
 
 void trie_print_prefix(trie_t *const trie)
 {
-  char x[MAX_LENGTH * 3 + 10]; /* needs at least 3x length of line */
+  char x[MAX_LENGTH * (SCALAR + 1) + 10]; /* needs at least 3x length of line */
   trie_print_prefix_node(trie->root,x);
 
   verify_depth(trie->root, 0);
