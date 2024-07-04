@@ -1,3 +1,4 @@
+Accept
 Accept-Patch
 Accept-Ranges
 Age
@@ -17,6 +18,7 @@ Delta-Base
 ETag
 Expires
 IM
+Keep-Alive
 Last-Modified
 Link
 Location
