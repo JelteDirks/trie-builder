@@ -1,14 +1,29 @@
 /* Copyright (C) Jelte Dirks - All Rights Reserved */
 
+
 #include "cli.h"
 #include "trie.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <arm_neon.h>
+
+int extract_lowest_logical(uint8x16_t src)
+{
+  uint8_t local[16];
+  vst1q_u8(local, src);
+
+  for (int i = 0; i < 16; i++) {
+    if (local[i] == 255) {
+      return i;
+    }
+  }
+
+  return -1;
+}
 
 int main(int argc, char **argv)
 {
@@ -32,13 +47,7 @@ int main(int argc, char **argv)
   }
 
   char read_buf[READ_BUFFER_SIZE];
-  char word_buf[MAX_LENGTH];
   ssize_t bytes_read;
-  trie_t *triep = malloc(sizeof(trie_t));
-
-  if (init_trie(triep)) {
-    fprintf(stderr, "could not build tree, check stderr for the reason\n");
-  }
 
   char c = '\0';
   while ((bytes_read = read(fd, &c, 1)) == 1) {
@@ -57,53 +66,35 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  int line_start_offset;
-  size_t length;
-  unsigned int i;
-  unsigned int word_offset = 0;
+  uint8x16_t newlines = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 
   while ((bytes_read = read(fd, read_buf, READ_BUFFER_SIZE)) > 0) {
-    line_start_offset = -1;
-    i = 0;
+    int vector_ops = (bytes_read / 16);
+    int remaining_bytes = bytes_read % 16;
 
-    while (i < bytes_read) {
-      char c = read_buf[i];
-      switch (c) {
-        case '\n':
-          length = i - line_start_offset - 1;
+    ssize_t i = 0;
+    while (vector_ops--) {
+      uint8_t const* idx = (uint8_t const*) &read_buf[i];
+      uint8x16_t vector = vld1q_u8(idx);
+      uint8x16_t cmp = vceqq_u8(vector, newlines);
 
-          if (length > (MAX_LENGTH - 1)) {
-            fprintf(stderr, "length of the next line (=%ld) exceeds max length (=%d)\n",
-                    length,
-                    MAX_LENGTH);
-            return 1;
-          }
+      uint8_t summation = vaddvq_u8(cmp);
 
-          if (word_offset > 0) {
-            memcpy(word_buf + (word_offset - 1) * sizeof(char),
-                   read_buf + line_start_offset + 1,
-                   length * sizeof(char));
-            word_buf[word_offset + length - 1] = '\0';
-            trie_add_value(triep, word_buf, word_offset + length - 1);
-          } else {
-            memcpy(word_buf, read_buf + line_start_offset + 1,
-                   length * sizeof(char));
-            word_buf[length] = '\0';
-            trie_add_value(triep, word_buf, length);
-          }
-
-
-          line_start_offset = i;
-          word_offset = 0;
-          break;
+      if (summation) {
+        int first_newline = extract_lowest_logical(cmp);
+        printf("first_newline: %d\n", first_newline);
       }
 
-      ++i;
+      i += 16;
     }
 
-    word_offset = i - line_start_offset;
-    memcpy(word_buf, read_buf + line_start_offset + 1, word_offset * sizeof(char));
+    if (remaining_bytes) {
+      printf("remainging_bytes to analyse: %d\n", remaining_bytes);
+    }
+
+    printf("bytes_read: %ld\n", bytes_read);
   };
+
 
   int status = close(fd);
   if (status == -1) {
@@ -111,7 +102,5 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  trie_print_prefix(triep);
-  trie_destroy(triep);
-  free(triep);
+  printf("Done\n");
 }
