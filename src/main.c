@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <arm_neon.h>
@@ -68,6 +69,12 @@ int main(int argc, char **argv)
 
   uint8x16_t newlines = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 
+  // TODO: use newline markers to copy into word buffer
+  // NOTE: maybe use the existing buffer for the string copy? Replace the newline
+  // with a 0 byte and start the string copy right after the last known location.
+  ssize_t previous_newline = 0;
+  char word_buffer[MAX_LENGTH];
+
   while ((bytes_read = read(fd, read_buf, READ_BUFFER_SIZE)) > 0) {
     int vector_ops = (bytes_read / 16);
     int remaining_bytes = bytes_read % 16;
@@ -78,9 +85,9 @@ int main(int argc, char **argv)
       uint8x16_t vector = vld1q_u8(idx);
       uint8x16_t cmp = vceqq_u8(vector, newlines);
 
-      uint8_t summation = vaddvq_u8(cmp);
+      uint8_t newlines_exists = vaddvq_u8(cmp);
 
-      if (summation) {
+      if (newlines_exists) {
         int first_newline = extract_lowest_logical(cmp);
         printf("first_newline: %d\n", first_newline);
       }
@@ -93,6 +100,8 @@ int main(int argc, char **argv)
     }
 
     printf("bytes_read: %ld\n", bytes_read);
+
+    break;
   };
 
 
