@@ -1,7 +1,7 @@
 #ifndef _TRIE_H_
 
 #define _TRIE_H_
-#define READ_BUFFER_SIZE 1024 /* max buffer size when reading file */
+#define READ_BUFFER_SIZE 32 /* max buffer size when reading file */
 #define MAX_LENGTH 200 /* max length is including \0 character */
 
 typedef struct TrieNode {
