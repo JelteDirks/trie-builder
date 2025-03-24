@@ -22,6 +22,8 @@ typedef struct Trie {
 
 void trie_print_prefix(trie_t *const trie);
 
+void verify_trie(trie_t *const trie);
+
 /*
  * Initializes a region that is allocated for a trie. The user can decide
  * where to store the trie. It will set up basic values to get started using

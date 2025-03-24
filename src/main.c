@@ -4,6 +4,7 @@
 #include "trie.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -14,6 +15,7 @@
 #define ELINES_TOO_LONG 1
 #define EFILE_CLOSE 2
 #define EFILE_OPEN 3
+#define ETRIE_ERROR 4
 
 static const uint8x16_t newlines = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 
@@ -70,6 +72,13 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  trie_t *triep = malloc(sizeof(trie_t));
+
+  if (init_trie(triep)) {
+    fprintf(stderr, "could not build tree, check stderr for the reason\n");
+    return ETRIE_ERROR;
+  }
+
   int read_offset = 0;
 
   while ((bytes_read = read(fd, &read_buf[read_offset], READ_BUFFER_SIZE - read_offset)) > 0) {
@@ -82,8 +91,7 @@ int main(int argc, char **argv)
     int i = 0;
 
     while (vector_ops--) {
-      uint8_t const* idx = (uint8_t const*) &read_buf[i];
-      uint8x16_t vector = vld1q_u8(idx);
+      uint8x16_t vector = vld1q_u8((uint8_t const*) &read_buf[i]);
       uint8x16_t cmp = vceqq_u8(vector, newlines);
       uint8_t newlines_exists = vaddvq_u8(cmp);
 
@@ -92,7 +100,7 @@ int main(int argc, char **argv)
           int offset = i + j;
           if (read_buf[offset] == '\n') {
             read_buf[offset] = '\0';
-            printf("%s\n", &read_buf[copy_start]);
+            trie_add_value(triep, &read_buf[copy_start], offset - copy_start);
             copy_start = offset + 1;
           }
         }
@@ -104,7 +112,7 @@ int main(int argc, char **argv)
     for (; i < bytes_read; ++i) {
       if (read_buf[i] == '\n') {
         read_buf[i] = '\0';
-        printf("%s\n", &read_buf[copy_start]);
+        trie_add_value(triep, &read_buf[copy_start], i - copy_start);
         copy_start = i + 1;
       }
     }
@@ -115,7 +123,6 @@ int main(int argc, char **argv)
     }
 
     const size_t remainder = bytes_read - copy_start;
-    
     if (remainder) {
       memcpy(read_buf, &read_buf[copy_start], remainder);
       read_offset = remainder;
@@ -127,4 +134,10 @@ int main(int argc, char **argv)
     fprintf(stderr, "error closing the file\n");
     return EFILE_CLOSE;
   }
+
+  //verify_trie(triep);
+
+  trie_print_prefix(triep);
+  trie_destroy(triep);
+  free(triep);
 }

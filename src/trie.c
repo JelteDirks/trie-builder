@@ -306,23 +306,24 @@ void trie_print_prefix(trie_t *const trie)
 {
   char x[MAX_LENGTH * (SCALAR + 1) + 10]; /* needs at least 3x length of line */
   trie_print_prefix_node(trie->root,x);
-
-  verify_depth(trie->root, 0);
-  verify_values_on_path(trie->root);
-  verify_parent_node(trie->root); // TODO: fix parents, somehow doesn't work on macos
 }
 
 void trie_print(trie_t *const trie)
 {
-  verify_depth(trie->root, 0);
-  verify_values_on_path(trie->root);
-  verify_parent_node(trie->root);
-
   char buffer[1000];
   memset(buffer, 0, 1000);
   print_node_tree(trie->root, buffer);
   fprintf(stderr, "\n");
 }
+
+
+void verify_trie(trie_t *const trie)
+{
+  verify_depth(trie->root, 0);
+  verify_values_on_path(trie->root); // TODO: fix this idk man wtf
+  verify_parent_node(trie->root);
+}
+
 
 void destroy_node(trie_node_t *const node)
 {
